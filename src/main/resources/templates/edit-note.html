@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Edit Note - Notes App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #6c5ce7;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 12px 20px;
+      background-color: rgba(108, 92, 231, 0.1);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      background-color: rgba(108, 92, 231, 0.2);
+      transform: translateX(-5px);
+    }
+
+    .note-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background-color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .note-id {
+      font-weight: 600;
+      color: #6c5ce7;
+      background-color: rgba(108, 92, 231, 0.1);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .last-updated {
+      color: #636e72;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-card {
+      background-color: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(108, 92, 231, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, #6c5ce7, #a29bfe);
+    }
+
+    .form-header {
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    .form-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .form-header p {
+      color: #636e72;
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid #eef2f7;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      background-color: #f9fafd;
+      color: #333;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #6c5ce7;
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
+    }
+
+    .form-input {
+      height: 56px;
+    }
+
+    .form-textarea {
+      min-height: 250px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .word-count {
+      font-weight: 500;
+      color: #6c5ce7;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 40px;
+      padding-top: 25px;
+      border-top: 1px solid #f1f2f6;
+    }
+
+    .btn {
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+    }
+
+    .btn-update {
+      background: linear-gradient(to right, #6c5ce7, #a29bfe);
+      color: white;
+      box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+      min-width: 180px;
+    }
+
+    .btn-update:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+    }
+
+    .btn-delete {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+      border: 2px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .btn-delete:hover {
+      background-color: rgba(231, 76, 60, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .btn-cancel {
+      background-color: #f8f9fa;
+      color: #636e72;
+      border: 2px solid #eef2f7;
+    }
+
+    .btn-cancel:hover {
+      background-color: #edf0f3;
+      transform: translateY(-2px);
+    }
+
+    .form-tools {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      background-color: #f8f9fa;
+      border: 1px solid #eef2f7;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      color: #636e72;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-btn:hover {
+      background-color: #6c5ce7;
+      color: white;
+      border-color: #6c5ce7;
+    }
+
+    .last-saved {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 12px 16px;
+      background-color: rgba(46, 204, 113, 0.1);
+      border-radius: 8px;
+      color: #27ae60;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .last-saved.show {
+      display: flex;
+      animation: fadeInOut 3s ease;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+
+    /* Animation for form appearance */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      .header-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .note-info {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .form-card {
+        padding: 30px 25px;
+      }
+
+      .form-header h1 {
+        font-size: 2rem;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .form-tools {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .form-card {
+        padding: 25px 20px;
+      }
+
+      .form-header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header-actions">
+    <a href="/" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Notes
+    </a>
+
+    <div class="note-info">
+      <div class="note-id">
+        <i class="fas fa-hashtag"></i>
+        <span th:text="${note.id}">ID</span>
+      </div>
+      <div class="last-updated">
+        <i class="far fa-clock"></i>
+        <span id="currentTime"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h1><i class="fas fa-edit"></i> Edit Note</h1>
+      <p>Update your note content. Changes will be saved when you click "Update Note".</p>
+    </div>
+
+    <form action="/update" method="post" th:object="${note}" id="noteForm">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="form-group">
+        <label class="form-label" for="title">
+          <i class="fas fa-heading"></i> Note Title
+        </label>
+        <input
+                type="text"
+                id="title"
+                th:field="*{title}"
+                class="form-input"
+                placeholder="Enter a descriptive title"
+                maxlength="100"
+                required>
+        <div class="char-count">
+          <span id="titleCount" th:text="${#strings.length(note.title)}">0</span>/100 characters
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="content">
+          <i class="fas fa-align-left"></i> Note Content
+        </label>
+        <textarea
+                id="content"
+                th:field="*{content}"
+                class="form-textarea"
+                placeholder="Update your note content here..."
+                maxlength="5000"
+                required></textarea>
+        <div class="char-count">
+          <div>
+            <span id="contentCount" th:text="${#strings.length(note.content)}">0</span>/5000 characters
+          </div>
+          <div class="word-count">
+            <span id="wordCount">0</span> words
+          </div>
+        </div>
+      </div>
+
+      <div class="form-tools">
+        <button type="button" class="tool-btn" onclick="formatText('bold')">
+          <i class="fas fa-bold"></i> Bold
+        </button>
+        <button type="button" class="tool-btn" onclick="formatText('italic')">
+          <i class="fas fa-italic"></i> Italic
+        </button>
+        <button type="button" class="tool-btn" onclick="formatText('list')">
+          <i class="fas fa-list-ul"></i> List
+        </button>
+        <button type="button" class="tool-btn" onclick="formatText('link')">
+          <i class="fas fa-link"></i> Link
+        </button>
+        <button type="button" class="tool-btn" onclick="clearFormatting()">
+          <i class="fas fa-eraser"></i> Clear
+        </button>
+      </div>
+
+      <div class="last-saved" id="lastSaved">
+        <i class="fas fa-check-circle"></i>
+        <span>Changes saved</span>
+      </div>
+
+      <div class="form-actions">
+        <div style="display: flex; gap: 15px;">
+          <a href="/" class="btn btn-cancel">
+            <i class="fas fa-times"></i> Cancel
+          </a>
+          <a th:href="@{/delete/{id}(id=${note.id})}" class="btn btn-delete" onclick="return confirmDelete()">
+            <i class="fas fa-trash-alt"></i> Delete
+          </a>
+        </div>
+        <button type="submit" class="btn btn-update">
+          <i class="fas fa-save"></i> Update Note
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="footer">
+    <p>Notes App &copy; <span th:text="${#dates.year(#dates.createNow())}">2023</span> | Edit with precision</p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set current time
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      document.getElementById('currentTime').textContent = `Last viewed: ${timeString}`;
+    }
+    updateTime();
+    setInterval(updateTime, 60000); // Update every minute
+
+    // Character and word counters
+    const titleInput = document.getElementById('title');
+    const contentTextarea = document.getElementById('content');
+    const titleCount = document.getElementById('titleCount');
+    const contentCount = document.getElementById('contentCount');
+    const wordCount = document.getElementById('wordCount');
+
+    // Initialize counters
+    function updateCounters() {
+      titleCount.textContent = titleInput.value.length;
+      contentCount.textContent = contentTextarea.value.length;
+
+      // Calculate word count
+      const words = contentTextarea.value.trim().split(/\s+/).filter(word => word.length > 0);
+      wordCount.textContent = words.length;
+
+      // Style warnings
+      if (titleInput.value.length > 90) {
+        titleCount.style.color = '#e74c3c';
+        titleCount.style.fontWeight = '600';
+      } else if (titleInput.value.length > 70) {
+        titleCount.style.color = '#f39c12';
+        titleCount.style.fontWeight = '500';
+      } else {
+        titleCount.style.color = '#7f8c8d';
+        titleCount.style.fontWeight = 'normal';
+      }
+
+      if (contentTextarea.value.length > 4500) {
+        contentCount.style.color = '#e74c3c';
+        contentCount.style.fontWeight = '600';
+      } else if (contentTextarea.value.length > 3500) {
+        contentCount.style.color = '#f39c12';
+        contentCount.style.fontWeight = '500';
+      } else {
+        contentCount.style.color = '#7f8c8d';
+        contentCount.style.fontWeight = 'normal';
+      }
+    }
+
+    updateCounters();
+
+    // Update counters on input
+    titleInput.addEventListener('input', updateCounters);
+    contentTextarea.addEventListener('input', updateCounters);
+
+    // Auto-save indicator (simulated)
+    let saveTimer;
+    contentTextarea.addEventListener('input', function() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function() {
+        const savedIndicator = document.getElementById('lastSaved');
+        savedIndicator.classList.add('show');
+        setTimeout(() => savedIndicator.classList.remove('show'), 3000);
+      }, 2000);
+    });
+
+    // Form validation
+    const form = document.getElementById('noteForm');
+
+    form.addEventListener('submit', function(e) {
+      const title = titleInput.value.trim();
+      const content = contentTextarea.value.trim();
+
+      if (!title) {
+        e.preventDefault();
+        alert('Please enter a title for your note.');
+        titleInput.focus();
+        return;
+      }
+
+      if (!content) {
+        e.preventDefault();
+        alert('Please enter content for your note.');
+        contentTextarea.focus();
+        return;
+      }
+
+      // Show updating animation
+      const updateBtn = document.querySelector('.btn-update');
+      const originalText = updateBtn.innerHTML;
+      updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+      updateBtn.disabled = true;
+
+      // Re-enable after 3 seconds (in case submission fails)
+      setTimeout(() => {
+        updateBtn.innerHTML = originalText;
+        updateBtn.disabled = false;
+      }, 3000);
+    });
+
+    // Auto-focus on content input
+    contentTextarea.focus();
+
+    // Add animation for form elements
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+      group.style.opacity = '0';
+      group.style.transform = 'translateY(10px)';
+
+      setTimeout(() => {
+        group.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        group.style.opacity = '1';
+        group.style.transform = 'translateY(0)';
+      }, 300 + (index * 150));
+    });
+  });
+
+  // Text formatting functions
+  function formatText(type) {
+    const textarea = document.getElementById('content');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+
+    let formattedText = '';
+
+    switch(type) {
+      case 'bold':
+        formattedText = `**${selectedText}**`;
+        break;
+      case 'italic':
+        formattedText = `*${selectedText}*`;
+        break;
+      case 'list':
+        formattedText = `\n- ${selectedText}`;
+        break;
+      case 'link':
+        formattedText = `[${selectedText}](https://)`;
+        break;
+    }
+
+    textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
+
+    // Trigger input event to update counters
+    textarea.dispatchEvent(new Event('input'));
+  }
+
+  function clearFormatting() {
+    const textarea = document.getElementById('content');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+
+    // Remove markdown formatting
+    let cleanedText = selectedText
+            .replace(/\*\*/g, '')
+            .replace(/\*/g, '')
+            .replace(/^-\s*/gm, '')
+            .replace(/\[(.*?)\]\(.*?\)/g, '$1');
+
+    textarea.value = textarea.value.substring(0, start) + cleanedText + textarea.value.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start, start + cleanedText.length);
+
+    // Trigger input event to update counters
+    textarea.dispatchEvent(new Event('input'));
+  }
+
+  function confirmDelete() {
+    return confirm('Are you sure you want to delete this note? This action cannot be undone.');
+  }
+</script>
+</body>
+</html>

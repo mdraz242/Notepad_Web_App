@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Add Note - Notes App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #6c5ce7;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 20px;
+      padding: 10px 0;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      gap: 12px;
+      color: #4a3fcf;
+    }
+
+    .form-card {
+      background-color: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .form-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .form-header {
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    .form-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .form-header p {
+      color: #636e72;
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid #eef2f7;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      background-color: #f9fafd;
+      color: #333;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #6c5ce7;
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
+    }
+
+    .form-input {
+      height: 56px;
+    }
+
+    .form-textarea {
+      min-height: 200px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      margin-top: 8px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 40px;
+      padding-top: 25px;
+      border-top: 1px solid #f1f2f6;
+    }
+
+    .btn {
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-save {
+      background: linear-gradient(to right, #6c5ce7, #a29bfe);
+      color: white;
+      box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+      min-width: 180px;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+    }
+
+    .btn-cancel {
+      background-color: #f8f9fa;
+      color: #636e72;
+      border: 2px solid #eef2f7;
+    }
+
+    .btn-cancel:hover {
+      background-color: #edf0f3;
+      transform: translateY(-2px);
+    }
+
+    .form-tips {
+      background-color: #f9fafd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+      border-left: 4px solid #6c5ce7;
+    }
+
+    .form-tips h3 {
+      font-size: 1.1rem;
+      color: #2c3e50;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-tips ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .form-tips li {
+      margin-bottom: 8px;
+      color: #636e72;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .form-tips li i {
+      color: #6c5ce7;
+      font-size: 0.9rem;
+      margin-top: 3px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+
+    /* Animation for form appearance */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      .form-card {
+        padding: 30px 25px;
+      }
+
+      .form-header h1 {
+        font-size: 2rem;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .form-card {
+        padding: 25px 20px;
+      }
+
+      .form-header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="/" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Notes
+  </a>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h1><i class="fas fa-plus-circle"></i> Add New Note</h1>
+      <p>Create a new note to capture your thoughts, ideas, or reminders.</p>
+    </div>
+
+    <form action="/save" method="post" th:object="${note}" id="noteForm">
+      <div class="form-group">
+        <label class="form-label" for="title">
+          <i class="fas fa-heading"></i> Note Title
+        </label>
+        <input
+                type="text"
+                id="title"
+                th:field="*{title}"
+                class="form-input"
+                placeholder="Enter a descriptive title"
+                maxlength="100"
+                required>
+        <div class="char-count">
+          <span id="titleCount">0</span>/100 characters
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="content">
+          <i class="fas fa-align-left"></i> Note Content
+        </label>
+        <textarea
+                id="content"
+                th:field="*{content}"
+                class="form-textarea"
+                placeholder="Start typing your note here..."
+                maxlength="2000"
+                required></textarea>
+        <div class="char-count">
+          <span id="contentCount">0</span>/2000 characters
+        </div>
+      </div>
+
+      <div class="form-tips">
+        <h3><i class="fas fa-lightbulb"></i> Writing Tips</h3>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Keep titles concise but descriptive</li>
+          <li><i class="fas fa-check-circle"></i> Use bullet points or numbered lists for clarity</li>
+          <li><i class="fas fa-check-circle"></i> Add important dates or deadlines at the top</li>
+          <li><i class="fas fa-check-circle"></i> Use markdown-style formatting for headings (##) or bold (**text**)</li>
+        </ul>
+      </div>
+
+      <div class="form-actions">
+        <a href="/" class="btn btn-cancel">
+          <i class="fas fa-times"></i> Cancel
+        </a>
+        <button type="submit" class="btn btn-save">
+          <i class="fas fa-save"></i> Save Note
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="footer">
+    <p>Notes App &copy; <span th:text="${#dates.year(#dates.createNow())}">2023</span> | Create with clarity</p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Character counters
+    const titleInput = document.getElementById('title');
+    const contentTextarea = document.getElementById('content');
+    const titleCount = document.getElementById('titleCount');
+    const contentCount = document.getElementById('contentCount');
+
+    // Initialize counters
+    titleCount.textContent = titleInput.value.length;
+    contentCount.textContent = contentTextarea.value.length;
+
+    // Update counters on input
+    titleInput.addEventListener('input', function() {
+      titleCount.textContent = this.value.length;
+      if (this.value.length > 90) {
+        titleCount.style.color = '#e74c3c';
+        titleCount.style.fontWeight = '600';
+      } else if (this.value.length > 70) {
+        titleCount.style.color = '#f39c12';
+        titleCount.style.fontWeight = '500';
+      } else {
+        titleCount.style.color = '#7f8c8d';
+        titleCount.style.fontWeight = 'normal';
+      }
+    });
+
+    contentTextarea.addEventListener('input', function() {
+      contentCount.textContent = this.value.length;
+      if (this.value.length > 1800) {
+        contentCount.style.color = '#e74c3c';
+        contentCount.style.fontWeight = '600';
+      } else if (this.value.length > 1500) {
+        contentCount.style.color = '#f39c12';
+        contentCount.style.fontWeight = '500';
+      } else {
+        contentCount.style.color = '#7f8c8d';
+        contentCount.style.fontWeight = 'normal';
+      }
+    });
+
+    // Form validation
+    const form = document.getElementById('noteForm');
+
+    form.addEventListener('submit', function(e) {
+      const title = titleInput.value.trim();
+      const content = contentTextarea.value.trim();
+
+      if (!title) {
+        e.preventDefault();
+        alert('Please enter a title for your note.');
+        titleInput.focus();
+        return;
+      }
+
+      if (!content) {
+        e.preventDefault();
+        alert('Please enter content for your note.');
+        contentTextarea.focus();
+        return;
+      }
+
+      // Show saving animation
+      const saveBtn = document.querySelector('.btn-save');
+      const originalText = saveBtn.innerHTML;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      saveBtn.disabled = true;
+
+      // Re-enable after 3 seconds (in case submission fails)
+      setTimeout(() => {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+      }, 3000);
+    });
+
+    // Auto-focus on title input
+    titleInput.focus();
+
+    // Add some animation for form elements
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+      group.style.opacity = '0';
+      group.style.transform = 'translateY(10px)';
+
+      setTimeout(() => {
+        group.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        group.style.opacity = '1';
+        group.style.transform = 'translateY(0)';
+      }, 300 + (index * 150));
+    });
+  });
+</script>
+</body>
+</html>

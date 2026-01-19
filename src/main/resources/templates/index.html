@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Notes App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 i {
+            color: #6c5ce7;
+            margin-right: 15px;
+        }
+
+        .add-note-btn {
+            background: linear-gradient(to right, #6c5ce7, #a29bfe);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .add-note-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .notes-count {
+            background-color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #6c5ce7;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .notes-table {
+            width: 100%;
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-collapse: collapse;
+        }
+
+        .notes-table thead {
+            background: linear-gradient(to right, #6c5ce7, #a29bfe);
+            color: white;
+        }
+
+        .notes-table th {
+            padding: 22px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.3px;
+        }
+
+        .notes-table th i {
+            margin-right: 10px;
+        }
+
+        .notes-table tbody tr {
+            border-bottom: 1px solid #f1f2f6;
+            transition: all 0.2s ease;
+        }
+
+        .notes-table tbody tr:hover {
+            background-color: #f9fafd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .notes-table td {
+            padding: 20px;
+            vertical-align: top;
+        }
+
+        .note-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .note-content {
+            color: #636e72;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .edit-btn {
+            background-color: rgba(108, 92, 231, 0.1);
+            color: #6c5ce7;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .edit-btn:hover {
+            background-color: rgba(108, 92, 231, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(231, 76, 60, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dfe6e9;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #636e72;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .notes-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .edit-btn, .delete-btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-sticky-note"></i> Arbaj's Note</h1>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="notes-count">
+                <span th:text="${notes.size()}">0</span> Notes
+            </div>
+            <a href="/add" class="add-note-btn">
+                <i class="fas fa-plus-circle"></i> Add New Note
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${notes.isEmpty()}" class="empty-state">
+        <i class="fas fa-clipboard-list"></i>
+        <h3>No notes yet</h3>
+        <p>You haven't created any notes. Click the "Add New Note" button to create your first note and start organizing your thoughts.</p>
+        <a href="/add" class="add-note-btn">
+            <i class="fas fa-plus-circle"></i> Create Your First Note
+        </a>
+    </div>
+
+    <table class="notes-table" th:unless="${notes.isEmpty()}">
+        <thead>
+        <tr>
+            <th><i class="fas fa-heading"></i> Title</th>
+            <th><i class="fas fa-align-left"></i> Content</th>
+            <th><i class="fas fa-cog"></i> Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="note : ${notes}">
+            <td>
+                <div class="note-title" th:text="${note.title}"></div>
+            </td>
+            <td>
+                <div class="note-content" th:text="${note.content}"></div>
+            </td>
+            <td>
+                <div class="actions">
+                    <a th:href="@{/view-notes/{id}(id=${note.id})}" class="edit-btn">
+                        <i class="fas fa-edit"></i> View Notes
+                    </a>
+
+                    <a th:href="@{/edit/{id}(id=${note.id})}" class="edit-btn">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a th:href="@{/delete/{id}(id=${note.id})}" class="delete-btn">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </a>
+
+
+
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Notes App &copy; <span th:text="${#dates.year(#dates.createNow())}">2023</span> | Keep your thoughts organized</p>
+    </div>
+</div>
+
+<script>
+    // Add interactive confirmation for delete actions
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Add subtle animation for table rows
+        const tableRows = document.querySelectorAll('.notes-table tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+</body>
+</html>
